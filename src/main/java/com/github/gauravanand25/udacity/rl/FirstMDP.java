@@ -1,10 +1,16 @@
 package com.github.gauravanand25.udacity.rl;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
+import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.DiscretizingHashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 
 
 /**
@@ -16,6 +22,8 @@ public class FirstMDP {
     Domain domain;
     State initialState;     // the state in which the agent will be.
     RewardFunction rf;
+    TerminalFunction tf;
+    HashableStateFactory hashFactory;
 
     public FirstMDP(double p1, double p2, double p3, double p4) {
         int numStates = 6;
@@ -40,6 +48,9 @@ public class FirstMDP {
         this.domain = this.gdd.generateDomain();
         this.initialState = GraphDefinedDomain.getState(this.domain, 0);
         this.rf = new FourParamRF(p1,p2,p3,p4);
+
+        this.tf = new NullTermination();    //never ends; no terminal state
+        this.hashFactory = new DiscretizingHashableStateFactory(0.);        //???
     }
 
     public static class FourParamRF implements RewardFunction {
@@ -66,5 +77,13 @@ public class FirstMDP {
             }
         }
 
+    }
+
+    private ValueIteration computeValue(double gamma) {
+        double maxDelta = 0.0001;
+        int maxIterations = 1000;
+        ValueIteration vi = new ValueIteration(this.domain, this.rf, this.tf, gamma, this.hashFactory, maxDelta, maxIterations);
+        GreedyQPolicy pi = vi.planFromState(this.initialState);     //runs value iteration; greedily selects the action with the highest Q-value and breaks ties uniformly randomly.
+        return vi;
     }
 }
