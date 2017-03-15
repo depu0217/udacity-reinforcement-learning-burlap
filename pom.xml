@@ -22,10 +22,19 @@
     </build>
 
     <dependencies>
+        <!--
         <dependency>
             <groupId>edu.brown.cs.burlap</groupId>
             <artifactId>burlap</artifactId>
-            <version>2.1.2</version>    <!--newer version 3.0.1 | -->
+            <version>2.1.2</version>
+        </dependency>
+        --> <!--newer version 3.0.1 | -->
+        <dependency>
+            <groupId>edu.brown.cs.burlap</groupId>
+            <artifactId>burlap</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/burlap.jar</systemPath>
         </dependency>
     </dependencies>
 

@@ -24,10 +24,11 @@ public class FirstMDP {
     RewardFunction rf;
     TerminalFunction tf;
     HashableStateFactory hashFactory;
+    int numStates = 6;
 
     public FirstMDP(double p1, double p2, double p3, double p4) {
-        int numStates = 6;
-        this.gdd = new GraphDefinedDomain(numStates);
+
+        this.gdd = new GraphDefinedDomain(this.numStates);
 
         //actions from initial state 0
         this.gdd.setTransition(0, 0, 1, 1.);
@@ -86,4 +87,31 @@ public class FirstMDP {
         GreedyQPolicy pi = vi.planFromState(this.initialState);     //runs value iteration; greedily selects the action with the highest Q-value and breaks ties uniformly randomly.
         return vi;
     }
+
+    public String bestFirstAction(double gamma) {
+        // Return "action a" if a is the best action based on the discount factor given.
+        // Return "action b" if b is the best action based on the discount factor given.
+        // Return "action c" if c is the best action based on the discount factor given.
+        // If there is a tie between actions, give preference to the earlier action in the alphabet:
+        //   e.g., if action a and action c are equally good, return "action a".
+        ValueIteration valueFunction = this.computeValue(gamma);
+
+        double[] utility = new double[this.numStates];
+        for( int i = 0; i < utility.length; ++i ) {
+            State s = this.gdd.getState(this.domain, i);
+            utility[i] = valueFunction.value(s);
+        }
+
+        String ret = "";
+        double bestUtility = Double.MIN_VALUE;
+        for( int i = 1; i < 4; ++i ) {
+            if( utility[i] > bestUtility) {
+                bestUtility = utility[i];
+                ret = Character.toString((char)(96+i));
+            }
+        }
+        ret = "action " + ret;
+        return ret;
+    }
+
 }
